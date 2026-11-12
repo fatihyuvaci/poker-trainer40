@@ -1,901 +1,714 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0b1120">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="40bb GTO">
-  <title>NLH Preflop GTO Trainer — 40bb Complete Suite</title>
-  <style>
-    :root {
-      --bg-dark: #0b1120;
-      --panel-bg: #1e293b;
-      --panel-border: #334155;
-      --felt-green: #14532d;
-      --felt-inner: #166534;
-      --color-allin: #f28b82;
-      --color-raise: #e61919;
-      --color-call: #18181b;
-      --color-fold: #8c9095;
-      --color-unused: #ffffff;
-      --accent-gold: #fbbf24;
-      --accent-blue: #38bdf8;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0b1120">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>40bb GTO Trainer</title>
+<style>
+  :root {
+    --bg-dark: #0b1120;
+    --panel-bg: #1e293b;
+    --panel-border: #334155;
+    --felt-green: #14532d;
+    --felt-inner: #166534;
+    --color-allin: #f28b82;
+    --color-raise: #e61919;
+    --color-call: #18181b;
+    --color-fold: #8c9095;
+    --color-unused: #ffffff;
+    --accent-gold: #fbbf24;
+    --accent-blue: #38bdf8;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+  }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
 
-    html, body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      width: 100%;
-      overscroll-behavior-y: contain;
-    }
+  body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    overflow-x: hidden;
+  }
 
+  @media (min-width: 981px) {
     body {
       height: 100vh;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
       padding: 10px 16px;
       overflow: hidden;
     }
+  }
 
-    button, select {
-      touch-action: manipulation;
-    }
+  /* TOP BAR: TITLE + DRILL MODE + SCORE */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-bg);
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    margin-bottom: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-    /* TOP BAR: TITLE + DRILL MODE + SCORE */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--panel-bg);
-      padding: 8px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--panel-border);
-      margin-bottom: 8px;
-      flex-shrink: 0;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+  .brand h1 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+    color: #fff;
+  }
 
-    .brand h1 {
-      font-size: 1.02rem;
-      font-weight: 800;
-      letter-spacing: 0.4px;
-      color: #fff;
-    }
+  .brand-tag {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent-blue);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
 
-    .brand-tag {
-      background: rgba(56, 189, 248, 0.15);
-      color: var(--accent-blue);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      padding: 2px 8px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      white-space: nowrap;
-    }
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
 
-    .controls-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+  .mode-select {
+    background: var(--bg-dark);
+    color: #fff;
+    border: 1px solid #475569;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
 
-    .mode-select {
-      background: var(--bg-dark);
-      color: #fff;
-      border: 1px solid #475569;
-      padding: 6px 10px;
-      border-radius: 7px;
-      font-size: 0.76rem;
-      font-weight: 600;
-      cursor: pointer;
-    }
+  .stats-pill {
+    background: var(--bg-dark);
+    padding: 5px 9px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border: 1px solid var(--panel-border);
+    display: flex;
+    gap: 8px;
+  }
 
-    .stats-pill {
-      background: var(--bg-dark);
-      padding: 6px 11px;
-      border-radius: 7px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      border: 1px solid var(--panel-border);
-      display: flex;
-      gap: 10px;
-      white-space: nowrap;
-    }
+  .reset-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid #475569;
+    padding: 5px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    cursor: pointer;
+  }
 
-    .reset-btn {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid #475569;
-      padding: 5px 10px;
-      border-radius: 7px;
-      font-size: 0.74rem;
-      cursor: pointer;
-    }
+  /* NAVIGATION BAR (NO HORIZONTAL SCROLL ON MOBILE) */
+  .command-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--panel-bg);
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
 
-    .reset-btn:hover {
-      color: #fff;
-      border-color: #94a3b8;
-    }
+  .nav-section {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
 
-    /* SIMPLIFIED NAVIGATION BAR (POS -> SPOT) */
+  .nav-label {
+    font-size: 0.66rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    margin-right: 2px;
+  }
+
+  .divider {
+    width: 1px;
+    height: 22px;
+    background: var(--panel-border);
+  }
+
+  .pos-btn {
+    background: var(--bg-dark);
+    color: var(--text-muted);
+    border: 1px solid var(--panel-border);
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.12s;
+    text-align: center;
+  }
+
+  .pos-btn.active {
+    background: var(--accent-gold);
+    color: #0b1120;
+    border-color: var(--accent-gold);
+  }
+
+  .spot-tabs {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .spot-btn {
+    background: var(--bg-dark);
+    color: #cbd5e1;
+    border: 1px solid var(--panel-border);
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  .spot-btn.active {
+    background: rgba(251, 191, 36, 0.14);
+    color: var(--accent-gold);
+    border-color: var(--accent-gold);
+  }
+
+  /* MOBILE NAVIGATION: FIT ALL BUTTONS ON SCREEN WITHOUT SCROLLING */
+  @media (max-width: 768px) {
     .command-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--panel-bg);
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid var(--panel-border);
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
-
-    .nav-section {
-      display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: stretch;
       gap: 6px;
-      flex-wrap: wrap;
+      padding: 6px;
     }
-
-    .nav-label {
-      font-size: 0.68rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.6px;
-      margin-right: 2px;
+    .nav-label, .divider {
+      display: none;
     }
-
-    .divider {
-      width: 1px;
-      height: 24px;
-      background: var(--panel-border);
+    .nav-section {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      width: 100%;
     }
-
-    /* Position Buttons */
     .pos-btn {
-      background: var(--bg-dark);
-      color: var(--text-muted);
-      border: 1px solid var(--panel-border);
-      padding: 6px 11px;
-      border-radius: 7px;
-      font-size: 0.76rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
+      padding: 7px 2px;
+      font-size: 0.72rem;
     }
-
-    .pos-btn:hover:not(:disabled) {
-      color: #fff;
-      border-color: #64748b;
-    }
-
-    .pos-btn.active {
-      background: var(--accent-gold);
-      color: #0b1120;
-      border-color: var(--accent-gold);
-    }
-
-    /* Spot Tabs */
     .spot-tabs {
       display: flex;
-      gap: 6px;
       flex-wrap: wrap;
-      flex: 1;
-    }
-
-    .spot-btn {
-      background: var(--bg-dark);
-      color: #cbd5e1;
-      border: 1px solid var(--panel-border);
-      padding: 6px 12px;
-      border-radius: 7px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-
-    .spot-btn:hover {
-      color: #fff;
-      border-color: #64748b;
-    }
-
-    .spot-btn.active {
-      background: rgba(251, 191, 36, 0.14);
-      color: var(--accent-gold);
-      border-color: var(--accent-gold);
-    }
-
-    /* MAIN WORKSPACE GRID */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.12fr;
-      gap: 14px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    /* LEFT PANEL: POKER TABLE */
-    .table-panel {
-      background: var(--panel-bg);
-      border-radius: 12px;
-      padding: 14px;
-      border: 1px solid var(--panel-border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-      min-height: 0;
-    }
-
-    .scenario-badges {
-      display: grid;
-      grid-template-columns: 1fr 0.85fr 1.45fr;
-      gap: 8px;
-    }
-
-    .badge-card {
-      background: var(--bg-dark);
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 7px 8px;
-      text-align: center;
-    }
-
-    .badge-label {
-      font-size: 0.62rem;
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .badge-value {
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: var(--accent-gold);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .badge-value.stack-highlight {
-      color: var(--accent-blue);
-    }
-
-    .poker-felt {
-      background: radial-gradient(circle, var(--felt-inner) 0%, var(--felt-green) 75%, #064e3b 100%);
-      border: 6px solid #3f2e21;
-      box-shadow: inset 0 0 30px rgba(0,0,0,0.6), 0 6px 16px rgba(0,0,0,0.4);
-      border-radius: 130px;
-      flex: 1;
-      min-height: 195px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 14px;
-      position: relative;
-      transition: transform 0.1s ease;
-    }
-
-    .poker-felt.clickable-felt {
-      cursor: pointer;
-    }
-
-    .action-history-banner {
-      background: rgba(0, 0, 0, 0.65);
-      padding: 5px 14px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: #f8fafc;
-      border: 1px solid rgba(251, 191, 36, 0.35);
-      text-align: center;
-      max-width: 95%;
-    }
-
-    .hero-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .cards-container {
-      display: flex;
-      gap: 12px;
-    }
-
-    .playing-card {
-      width: 80px;
-      height: 112px;
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 8px;
-      border: 2px solid #e2e8f0;
-    }
-
-    .playing-card .corner-rank {
-      font-size: 1.3rem;
-      font-weight: 900;
-      line-height: 1;
-    }
-
-    .playing-card .center-suit {
-      font-size: 2.2rem;
-      align-self: center;
-      line-height: 1;
-    }
-
-    .playing-card .bottom-rank {
-      font-size: 0.95rem;
-      font-weight: 800;
-      align-self: flex-end;
-      line-height: 1;
-    }
-
-    .suit-spades { color: #0f172a; }
-    .suit-hearts { color: #dc2626; }
-    .suit-diamonds { color: #2563eb; }
-    .suit-clubs { color: #15803d; }
-
-    .hand-notation-badge {
-      background: var(--bg-dark);
-      color: #fff;
-      padding: 3px 16px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: 0.88rem;
-      border: 2px solid var(--accent-gold);
-    }
-
-    /* FEEDBACK BOX */
-    .feedback-box {
-      min-height: 58px;
-      border-radius: 9px;
-      padding: 8px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--bg-dark);
-      border: 1px solid var(--panel-border);
-      gap: 10px;
-    }
-
-    .feedback-box.correct {
-      background: rgba(21, 128, 61, 0.25);
-      border-color: #22c55e;
-    }
-
-    .feedback-box.wrong {
-      background: rgba(185, 28, 28, 0.25);
-      border-color: #ef4444;
-    }
-
-    .feedback-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .feedback-icon {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-
-    .icon-neutral { background: #1e293b; color: #64748b; }
-    .icon-correct { background: #22c55e; color: #052e16; }
-    .icon-wrong { background: #ef4444; color: #fff; }
-
-    .feedback-text {
-      min-width: 0;
-    }
-
-    .feedback-text h3 {
-      font-size: 0.85rem;
-      font-weight: 800;
-    }
-
-    .feedback-text p {
-      font-size: 0.74rem;
-      color: #cbd5e1;
-      margin-top: 2px;
-    }
-
-    .next-btn {
-      background: var(--accent-gold);
-      color: #0f172a;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.78rem;
-      cursor: pointer;
-      display: none;
-      white-space: nowrap;
-      flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(251, 191, 36, 0.35);
-    }
-
-    .next-btn:active {
-      transform: scale(0.97);
-    }
-
-    /* ACTION BUTTONS */
-    .action-buttons {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
-      gap: 8px;
-    }
-
-    .act-btn {
-      border: none;
-      border-radius: 9px;
-      padding: 12px 6px;
-      color: #fff;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      transition: transform 0.08s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .act-btn:active:not(:disabled) { transform: translateY(2px); }
-    .act-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-
-    .btn-fold { background: #64748b; border-bottom: 4px solid #475569; }
-    .btn-call { background: #18181b; border-bottom: 4px solid #09090b; border-top: 1px solid #3f3f46; }
-    .btn-raise { background: #e61919; border-bottom: 4px solid #991b1b; }
-    .btn-allin { background: #f28b82; color: #0f172a; border-bottom: 4px solid #e11d48; }
-
-    .act-btn .act-title {
-      font-size: 0.88rem;
-      font-weight: 900;
-    }
-
-    .act-btn .act-sub {
-      font-size: 0.66rem;
-      opacity: 0.85;
-      font-weight: 600;
-    }
-
-    /* RIGHT PANEL: 13x13 MATRIX */
-    .chart-panel {
-      background: var(--panel-bg);
-      border-radius: 12px;
-      padding: 14px;
-      border: 1px solid var(--panel-border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      min-height: 0;
-    }
-
-    .chart-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .chart-title {
-      font-size: 0.88rem;
-      font-weight: 800;
-    }
-
-    .legend {
-      display: flex;
-      gap: 8px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      flex-wrap: wrap;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
       gap: 4px;
+      width: 100%;
     }
-
-    .legend-swatch {
-      width: 11px;
-      height: 11px;
-      border-radius: 3px;
-      border: 1px solid rgba(255,255,255,0.2);
+    .spot-btn {
+      flex: 1 1 calc(33.33% - 4px);
+      min-width: 96px;
+      padding: 7px 4px;
+      font-size: 0.69rem;
+      white-space: normal;
+      line-height: 1.15;
     }
+  }
 
+  /* MAIN WORKSPACE GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.12fr;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  @media (max-width: 980px) {
+    .main-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* LEFT PANEL: POKER TABLE */
+  .table-panel {
+    background: var(--panel-bg);
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 0;
+  }
+
+  .scenario-badges {
+    display: grid;
+    grid-template-columns: 1fr 0.8fr 1.4fr;
+    gap: 6px;
+  }
+
+  .badge-card {
+    background: var(--bg-dark);
+    border: 1px solid var(--panel-border);
+    border-radius: 8px;
+    padding: 6px;
+    text-align: center;
+  }
+
+  .badge-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+  }
+
+  .badge-value {
+    font-size: 0.86rem;
+    font-weight: 800;
+    color: var(--accent-gold);
+  }
+
+  .badge-value.stack-highlight {
+    color: var(--accent-blue);
+  }
+
+  .poker-felt {
+    background: radial-gradient(circle, var(--felt-inner) 0%, var(--felt-green) 75%, #064e3b 100%);
+    border: 6px solid #3f2e21;
+    box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 4px 12px rgba(0,0,0,0.35);
+    border-radius: 95px;
+    flex: 1;
+    min-height: 185px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .action-history-banner {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #f8fafc;
+    border: 1px solid rgba(251, 191, 36, 0.35);
+    text-align: center;
+  }
+
+  .hero-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .cards-container {
+    display: flex;
+    gap: 10px;
+  }
+
+  .playing-card {
+    width: 74px;
+    height: 102px;
+    background: #ffffff;
+    border-radius: 9px;
+    box-shadow: 0 5px 14px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px;
+    border: 2px solid #e2e8f0;
+  }
+
+  .playing-card .corner-rank {
+    font-size: 1.25rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .playing-card .center-suit {
+    font-size: 2.1rem;
+    align-self: center;
+    line-height: 1;
+  }
+
+  .playing-card .bottom-rank {
+    font-size: 0.95rem;
+    font-weight: 800;
+    align-self: flex-end;
+    line-height: 1;
+  }
+
+  .suit-spades { color: #0f172a; }
+  .suit-hearts { color: #dc2626; }
+  .suit-diamonds { color: #2563eb; }
+  .suit-clubs { color: #15803d; }
+
+  .hand-notation-badge {
+    background: var(--bg-dark);
+    color: #fff;
+    padding: 2px 14px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 2px solid var(--accent-gold);
+  }
+
+  /* FEEDBACK BOX */
+  .feedback-box {
+    min-height: 58px;
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-dark);
+    border: 1px solid var(--panel-border);
+    gap: 8px;
+  }
+
+  .feedback-box.correct {
+    background: rgba(21, 128, 61, 0.28);
+    border-color: #22c55e;
+  }
+
+  .feedback-box.wrong {
+    background: rgba(185, 28, 28, 0.28);
+    border-color: #ef4444;
+  }
+
+  .feedback-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .feedback-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .icon-neutral { background: #1e293b; color: #64748b; }
+  .icon-correct { background: #22c55e; color: #052e16; }
+  .icon-wrong { background: #ef4444; color: #fff; }
+
+  .feedback-text h3 {
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  .feedback-text p {
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    margin-top: 2px;
+  }
+
+  .next-btn {
+    background: var(--accent-gold);
+    color: #0f172a;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 900;
+    font-size: 0.78rem;
+    cursor: pointer;
+    display: none;
+    white-space: nowrap;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  }
+
+  /* ACTION BUTTONS */
+  .action-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(85px, 1fr));
+    gap: 8px;
+  }
+
+  .act-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 12px 6px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  .act-btn:active { transform: translateY(2px); }
+  .act-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .btn-fold { background: #64748b; border-bottom: 4px solid #475569; }
+  .btn-call { background: #18181b; border-bottom: 4px solid #09090b; border-top: 1px solid #3f3f46; }
+  .btn-raise { background: #e61919; border-bottom: 4px solid #991b1b; }
+  .btn-allin { background: #f28b82; color: #0f172a; border-bottom: 4px solid #e11d48; }
+
+  .act-btn .act-title {
+    font-size: 0.88rem;
+    font-weight: 900;
+  }
+
+  .act-btn .act-sub {
+    font-size: 0.65rem;
+    opacity: 0.85;
+    font-weight: 600;
+  }
+
+  /* RIGHT PANEL: 13x13 MATRIX */
+  .chart-panel {
+    background: var(--panel-bg);
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid var(--panel-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chart-title {
+    font-size: 0.84rem;
+    font-weight: 800;
+  }
+
+  .legend {
+    display: flex;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .legend-swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .matrix-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    border: 2px solid var(--bg-dark);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  @media (min-width: 981px) {
     .matrix-wrapper {
-      position: relative;
-      width: 100%;
       max-height: calc(100vh - 235px);
-      aspect-ratio: 1 / 1;
-      margin: 0 auto;
-      border: 2px solid var(--bg-dark);
-      border-radius: 6px;
-      overflow: hidden;
     }
+  }
 
-    .matrix-grid {
-      display: grid;
-      grid-template-columns: repeat(13, 1fr);
-      grid-template-rows: repeat(13, 1fr);
-      width: 100%;
-      height: 100%;
-      background: #475569;
-      gap: 1px;
-    }
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    grid-template-rows: repeat(13, 1fr);
+    width: 100%;
+    height: 100%;
+    background: #475569;
+    gap: 1px;
+  }
 
-    .matrix-cell {
-      position: relative;
-      background: var(--color-fold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: clamp(0.5rem, 1.05vw, 0.75rem);
-      font-weight: 700;
-      color: #f8fafc;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-      overflow: hidden;
-    }
+  .matrix-cell {
+    position: relative;
+    background: var(--color-fold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.48rem, 2.2vw, 0.74rem);
+    font-weight: 700;
+    color: #f8fafc;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.95);
+    overflow: hidden;
+  }
 
-    .matrix-cell.unused-cell {
-      background: #ffffff;
-      color: transparent;
-      text-shadow: none;
-    }
+  .matrix-cell.unused-cell {
+    background: #ffffff;
+    color: transparent;
+    text-shadow: none;
+  }
 
-    .cell-bars {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-    }
+  .cell-bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
 
-    .bar-allin { background: var(--color-allin); height: 100%; }
-    .bar-raise { background: var(--color-raise); height: 100%; }
-    .bar-call  { background: var(--color-call); height: 100%; }
-    .bar-fold  { background: var(--color-fold); height: 100%; }
+  .bar-allin { background: var(--color-allin); height: 100%; }
+  .bar-raise { background: var(--color-raise); height: 100%; }
+  .bar-call  { background: var(--color-call); height: 100%; }
+  .bar-fold  { background: var(--color-fold); height: 100%; }
 
-    .matrix-cell span {
-      position: relative;
-      z-index: 2;
-    }
+  .matrix-cell span {
+    position: relative;
+    z-index: 2;
+  }
 
-    .matrix-cell.active-hand {
-      outline: 3px solid var(--accent-gold);
-      outline-offset: -3px;
-      z-index: 5;
-    }
+  .matrix-cell.active-hand {
+    outline: 3px solid var(--accent-gold);
+    outline-offset: -3px;
+    z-index: 5;
+  }
 
-    .matrix-mask {
-      position: absolute;
-      inset: 0;
-      background: rgba(11, 17, 32, 0.93);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 20px;
-      transition: opacity 0.12s ease;
-      cursor: pointer;
-    }
+  .matrix-mask {
+    position: absolute;
+    inset: 0;
+    background: rgba(11, 17, 32, 0.93);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 16px;
+    transition: opacity 0.12s ease;
+    cursor: pointer;
+  }
 
-    .matrix-mask.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+  .matrix-mask.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
 
-    .mask-title {
-      font-size: 1.02rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-    }
+  .mask-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+  }
 
-    .mask-sub {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      max-width: 280px;
-    }
+  .mask-sub {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    max-width: 260px;
+  }
 
-    .chart-footer {
-      margin-top: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      gap: 8px;
-    }
+  .chart-footer {
+    margin-top: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    gap: 6px;
+  }
 
-    .toggle-peek-btn {
-      background: #334155;
-      color: #e2e8f0;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.74rem;
-      cursor: pointer;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .toggle-peek-btn:hover {
-      background: #475569;
-    }
-
-    /* ============================================================================
-       MOBILE & TABLET RESPONSIVE OVERRIDES
-       ============================================================================ */
-    @media (max-width: 980px) {
-      body {
-        height: auto;
-        min-height: 100dvh;
-        overflow-y: auto;
-        padding: 8px 10px 24px 10px;
-      }
-
-      .main-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-
-      .matrix-wrapper {
-        max-height: none;
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .top-bar {
-        padding: 8px 10px;
-        gap: 6px;
-      }
-
-      .brand {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .brand h1 {
-        font-size: 0.92rem;
-      }
-
-      .controls-bar {
-        width: 100%;
-        justify-content: space-between;
-        gap: 6px;
-      }
-
-      .mode-select {
-        flex: 1;
-        min-width: 120px;
-        font-size: 0.72rem;
-        padding: 5px 6px;
-      }
-
-      .stats-pill {
-        font-size: 0.72rem;
-        padding: 5px 8px;
-        gap: 7px;
-      }
-
-      .reset-btn {
-        padding: 5px 8px;
-        font-size: 0.7rem;
-      }
-
-      /* Horizontal swipeable bars on mobile */
-      .command-bar {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 8px 10px;
-        gap: 8px;
-      }
-
-      .divider {
-        display: none;
-      }
-
-      .nav-section, .spot-tabs {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding-bottom: 2px;
-      }
-
-      .nav-section::-webkit-scrollbar,
-      .spot-tabs::-webkit-scrollbar {
-        display: none;
-      }
-
-      .pos-btn, .spot-btn {
-        flex-shrink: 0;
-        padding: 7px 11px;
-        font-size: 0.74rem;
-      }
-
-      .table-panel {
-        padding: 10px;
-        gap: 8px;
-      }
-
-      .badge-card {
-        padding: 5px 6px;
-      }
-
-      .badge-label {
-        font-size: 0.56rem;
-      }
-
-      .badge-value {
-        font-size: 0.78rem;
-      }
-
-      .poker-felt {
-        min-height: 150px;
-        border-radius: 90px;
-        border-width: 5px;
-        padding: 10px;
-        gap: 8px;
-      }
-
-      .action-history-banner {
-        font-size: 0.72rem;
-        padding: 4px 10px;
-      }
-
-      .playing-card {
-        width: 64px;
-        height: 90px;
-        padding: 6px;
-        border-radius: 8px;
-      }
-
-      .playing-card .corner-rank {
-        font-size: 1.08rem;
-      }
-
-      .playing-card .center-suit {
-        font-size: 1.75rem;
-      }
-
-      .playing-card .bottom-rank {
-        font-size: 0.8rem;
-      }
-
-      .hand-notation-badge {
-        font-size: 0.8rem;
-        padding: 2px 12px;
-      }
-
-      .feedback-box {
-        padding: 8px 10px;
-        min-height: 52px;
-      }
-
-      .feedback-text h3 {
-        font-size: 0.78rem;
-      }
-
-      .feedback-text p {
-        font-size: 0.68rem;
-      }
-
-      .next-btn {
-        padding: 9px 11px;
-        font-size: 0.74rem;
-      }
-
-      .act-btn {
-        padding: 11px 4px;
-      }
-
-      .act-btn .act-title {
-        font-size: 0.82rem;
-      }
-
-      .act-btn .act-sub {
-        display: none;
-      }
-
-      .chart-panel {
-        padding: 10px;
-      }
-
-      .matrix-cell {
-        font-size: 0.52rem;
-      }
-
-      .shortcut-hint-text {
-        font-size: 0.65rem;
-      }
-    }
-  </style>
+  .toggle-peek-btn {
+    background: #334155;
+    color: #e2e8f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+</style>
 </head>
 <body>
 
   <!-- TOP HEADER BAR -->
   <header class="top-bar">
     <div class="brand">
-      <h1>♠️ NLH 40BB PREFLOP GTO TRAINER</h1>
-      <span class="brand-tag" id="totalChartsTag">23 Charts (40bb)</span>
+      <h1>♠️ NLH 40BB GTO TRAINER</h1>
+      <span class="brand-tag" id="totalChartsTag">23 Charts</span>
     </div>
     <div class="controls-bar">
       <select id="drillMode" class="mode-select">
-        <option value="smart">Smart Mix (65% Borderline)</option>
-        <option value="borderline">Borderline / Active Only</option>
-        <option value="random">True Random (All Hands)</option>
+        <option value="smart">Smart Mix (65% Edge)</option>
+        <option value="borderline">Borderline Only</option>
+        <option value="random">True Random</option>
       </select>
       <div class="stats-pill">
-        <span>Score: <strong id="scoreText">0/0</strong></span>
-        <span>Acc: <strong id="accText">0%</strong></span>
+        <span><strong id="scoreText">0/0</strong></span>
+        <span><strong id="accText">0%</strong></span>
         <span><strong id="streakText">0</strong>🔥</span>
       </div>
       <button class="reset-btn" onclick="resetStats()">Reset</button>
     </div>
   </header>
 
-  <!-- SIMPLIFIED 2-STEP COMMAND BAR (POS -> SPOTS) -->
+  <!-- NAVIGATION BAR (POS -> SPOTS) -->
   <nav class="command-bar">
-    <!-- 1. POSITION GROUP -->
     <div class="nav-section" id="posButtonsContainer"></div>
-
     <div class="divider"></div>
-
-    <!-- 2. SCENARIO SPOTS -->
     <div class="spot-tabs" id="spotButtonsContainer"></div>
   </nav>
 
@@ -913,12 +726,12 @@
           <div class="badge-value stack-highlight" id="badgeStack">40 BB</div>
         </div>
         <div class="badge-card">
-          <div class="badge-label">Scenario Spot</div>
-          <div class="badge-value" id="badgeSpot">Open Raise (PFI)</div>
+          <div class="badge-label">Spot</div>
+          <div class="badge-value" id="badgeSpot">Open Raise</div>
         </div>
       </div>
 
-      <div class="poker-felt" id="pokerFelt" onclick="handleFeltTap()">
+      <div class="poker-felt">
         <div class="action-history-banner" id="feltBanner">
           Action on Hero (UTG 40bb) — First to Act
         </div>
@@ -945,7 +758,7 @@
           <div id="feedbackIcon" class="feedback-icon icon-neutral">?</div>
           <div class="feedback-text">
             <h3 id="feedbackTitle">Your Action</h3>
-            <p id="feedbackDesc">Select the correct GTO action below.</p>
+            <p id="feedbackDesc">Tap your action below.</p>
           </div>
         </div>
         <button id="nextBtn" class="next-btn" onclick="dealNextHand()">NEXT →</button>
@@ -961,16 +774,16 @@
         <div class="legend" id="chartLegend"></div>
       </div>
 
-      <div class="matrix-wrapper">
+      <div class="matrix-wrapper" id="matrixWrapper">
         <div id="matrixGrid" class="matrix-grid"></div>
-        <div id="matrixMask" class="matrix-mask" onclick="togglePeek()">
-          <div class="mask-title">🔒 Range Chart Hidden</div>
-          <div class="mask-sub">Tap here or hold [`] key to peek, or choose your action to reveal the full GTO range matrix.</div>
+        <div id="matrixMask" class="matrix-mask">
+          <div class="mask-title">🔒 Chart Hidden</div>
+          <div class="mask-sub">Touch & hold here (or hold [`] key) to peek, or choose your action above.</div>
         </div>
       </div>
 
       <div class="chart-footer">
-        <span class="shortcut-hint-text">Tap mask or [`] to Peek • Tap table or [Space] for Next Hand</span>
+        <span>Hold chart or [`] to peek • Tap Next / [Space]</span>
         <button class="toggle-peek-btn" onclick="togglePeek()">👁️ Peek Chart</button>
       </div>
     </section>
@@ -1644,18 +1457,16 @@
   };
 
   // ============================================================================
-  // 40BB SCENARIOS DICTIONARY (ALL 23 SPOTS)
+  // 40BB SCENARIOS DICTIONARY (23 SPOTS)
   // ============================================================================
   const SCENARIOS = {
+    // --- UTG / UTG+1 (40bb) ---
     utg_open: {
       id: 'utg_open', stack: '40', group: 'UTG',
       title: 'Hand Range 138: UTG 40bb PFI', pos: 'UTG', spot: 'Open Raise (PFI)',
       banner: 'Action on Hero (UTG 40bb) — First to Act', isConditional: false, raw: RANGE_138_RAW,
       borderline: ['A3s','A2s','K9s','K8s','K7s','K6s','K5s','Q9s','Q8s','J9s','J8s','T9s','T8s','98s','87s','76s','65s','54s','ATo','A9o','KQo','KJo','KTo','77','66','55','44'],
-      legend: [
-        { label: 'Raise 2x 15.8%', color: 'var(--color-raise)' },
-        { label: 'Fold 84.2%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Raise 2x 15.8%', color: 'var(--color-raise)' }, { label: 'Fold 84.2%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',     sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL 1bb', sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1664,14 +1475,10 @@
     },
     utg1_vs_open: {
       id: 'utg1_vs_open', stack: '40', group: 'UTG',
-      title: 'Hand Range 263: UTG+1 vs UTG (40bb)', pos: 'UTG+1', spot: 'Defence vs UTG Open',
+      title: 'Hand Range 263: UTG+1 vs UTG (40bb)', pos: 'UTG+1', spot: 'vs UTG Open',
       banner: 'UTG Opens 2x → Action on Hero (UTG+1)', isConditional: false, raw: RANGE_263_RAW,
       borderline: ['AA','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','AKo','KQs','KJs','KTs','K9s','K6s','K5s','AQo','KQo','AJo','ATo','QQ','QJs','QTs','JJ','JTs','TT','99','88','77','66','65s','54s'],
-      legend: [
-        { label: '3-bet 4.8%', color: 'var(--color-raise)' },
-        { label: 'Call 4%', color: 'var(--color-call)' },
-        { label: 'Fold 91.2%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 4.8%', color: 'var(--color-raise)' }, { label: 'Call 4%', color: 'var(--color-call)' }, { label: 'Fold 91.2%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1680,14 +1487,10 @@
     },
     utg_vs_3bet: {
       id: 'utg_vs_3bet', stack: '40', group: 'UTG',
-      title: 'Hand Range 322: UTG 40bb vs UTG+1 3.25x 3-bet', pos: 'UTG', spot: '2x Open vs 3-Bet',
+      title: 'Hand Range 322: UTG 40bb vs UTG+1 3.25x 3-bet', pos: 'UTG', spot: 'vs UTG+1 3-Bet',
       banner: 'Hero (UTG) Opens 2x → UTG+1 3-Bets 3.25x → Action on Hero', isConditional: true, raw: RANGE_322_RAW,
       borderline: Object.keys(RANGE_322_RAW),
-      legend: [
-        { label: 'All-in 26.1%', color: 'var(--color-allin)' },
-        { label: 'Call 9.7%', color: 'var(--color-call)' },
-        { label: 'Fold 64.2%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 26.1%', color: 'var(--color-allin)' }, { label: 'Call 9.7%', color: 'var(--color-call)' }, { label: 'Fold 64.2%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',   sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',   sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1697,27 +1500,22 @@
     utg1_vs_4bet: {
       id: 'utg1_vs_4bet', stack: '40', group: 'UTG',
       title: 'Hand Range 264: UTG+1 vs UTG 4-bet (40bb)', pos: 'UTG+1', spot: 'vs UTG 4-Bet',
-      banner: 'UTG Opens 2x → Hero (UTG+1) 3-Bets → UTG 4-Bets → Action on Hero', isConditional: true, raw: RANGE_264_RAW,
+      banner: 'UTG Opens → Hero (UTG+1) 3-Bets → UTG 4-Bets → Hero', isConditional: true, raw: RANGE_264_RAW,
       borderline: Object.keys(RANGE_264_RAW),
-      legend: [
-        { label: 'Call 59.7%', color: 'var(--color-call)' },
-        { label: 'Fold 40.3%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 59.7%', color: 'var(--color-call)' }, { label: 'Fold 40.3%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
       ]
     },
 
+    // --- LJ / HJ (40bb) ---
     hj_open: {
       id: 'hj_open', stack: '40', group: 'HJ',
       title: 'Hand Range 122: HJ 40bb PFI', pos: 'LJ / HJ', spot: 'Open Raise (PFI)',
-      banner: 'Action on Hero (LJ/HJ 40bb) — Unopened Pot', isConditional: false, raw: RANGE_122_RAW,
+      banner: 'Action on Hero (LJ/HJ) — Unopened Pot', isConditional: false, raw: RANGE_122_RAW,
       borderline: ['K5s','K4s','K3s','K2s','Q8s','Q7s','Q6s','Q5s','J8s','J7s','J6s','T8s','T7s','T6s','97s','96s','95s','87s','86s','85s','76s','75s','65s','64s','54s','53s','A8o','A7o','A6o','A5o','KTo','K9o','QTo','Q9o','JTo','J9o','T9o','44','33','22'],
-      legend: [
-        { label: 'Raise 2.3x 28.6%', color: 'var(--color-raise)' },
-        { label: 'Fold 71.4%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Raise 2.3x 28.6%', color: 'var(--color-raise)' }, { label: 'Fold 71.4%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',      sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL 1bb',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1726,14 +1524,10 @@
     },
     hj_vs_open: {
       id: 'hj_vs_open', stack: '40', group: 'HJ',
-      title: 'Hand Range 254: HJ vs UTG (40bb)', pos: 'LJ / HJ', spot: 'Defence vs UTG Open',
+      title: 'Hand Range 254: HJ vs UTG (40bb)', pos: 'LJ / HJ', spot: 'vs UTG Open',
       banner: 'UTG Opens 2x → Action on Hero (LJ/HJ)', isConditional: false, raw: RANGE_254_RAW,
       borderline: ['AKs','AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','AKo','AQo','AJo','ATo','KQs','KJs','KTs','K9s','K8s','K6s','K5s','KQo','QQ','QJs','QTs','JJ','JTs','TT','T9s','99','88','77','66','55','44','33','22'],
-      legend: [
-        { label: '3-bet 4.9%', color: 'var(--color-raise)' },
-        { label: 'Call 8.9%', color: 'var(--color-call)' },
-        { label: 'Fold 86.3%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 4.9%', color: 'var(--color-raise)' }, { label: 'Call 8.9%', color: 'var(--color-call)' }, { label: 'Fold 86.3%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1745,11 +1539,7 @@
       title: 'Hand Range 309: LJ 40bb vs BB 3.5x 3-bet', pos: 'LJ / HJ', spot: '2.3x Open vs 3-Bet',
       banner: 'Hero (LJ/HJ) Opens 2.3x → BB 3-Bets 3.5x → Action on Hero', isConditional: true, raw: RANGE_309_RAW,
       borderline: Object.keys(RANGE_309_RAW),
-      legend: [
-        { label: 'All-in 7.8%', color: 'var(--color-allin)' },
-        { label: 'Call 56.2%', color: 'var(--color-call)' },
-        { label: 'Fold 36%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 7.8%', color: 'var(--color-allin)' }, { label: 'Call 56.2%', color: 'var(--color-call)' }, { label: 'Fold 36%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',   sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',   sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1759,27 +1549,22 @@
     hj_vs_4bet: {
       id: 'hj_vs_4bet', stack: '40', group: 'HJ',
       title: 'Hand Range 255: HJ vs UTG 4-bet (40bb)', pos: 'LJ / HJ', spot: 'vs UTG 4-Bet',
-      banner: 'UTG Opens → Hero (LJ/HJ) 3-Bets → UTG 4-Bets → Action on Hero', isConditional: true, raw: RANGE_255_RAW,
+      banner: 'UTG Opens → Hero (LJ/HJ) 3-Bets → UTG 4-Bets → Hero', isConditional: true, raw: RANGE_255_RAW,
       borderline: Object.keys(RANGE_255_RAW),
-      legend: [
-        { label: 'Call 49.2%', color: 'var(--color-call)' },
-        { label: 'Fold 50.8%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 49.2%', color: 'var(--color-call)' }, { label: 'Fold 50.8%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
       ]
     },
 
+    // --- BN (40bb) ---
     bn_open: {
       id: 'bn_open', stack: '40', group: 'BN',
-      title: 'Hand Range 114: BN 40bb PFI', pos: 'BN (Button)', spot: 'Open Raise (PFI)',
-      banner: 'Action on Hero (BN 40bb) — Unopened Pot', isConditional: false, raw: RANGE_114_RAW,
+      title: 'Hand Range 114: BN 40bb PFI', pos: 'BN', spot: 'Open Raise (PFI)',
+      banner: 'Action on Hero (BN) — Unopened Pot', isConditional: false, raw: RANGE_114_RAW,
       borderline: ['J4s','J3s','J2s','T5s','T4s','T3s','T2s','96s','95s','94s','86s','85s','84s','75s','74s','73s','65s','64s','63s','54s','53s','52s','43s','K7o','K6o','K5o','K4o','Q8o','Q7o','Q6o','J9o','J8o','J7o','T9o','T8o','T7o','98o','97o','87o'],
-      legend: [
-        { label: 'Raise 2.3x 50.9%', color: 'var(--color-raise)' },
-        { label: 'Fold 49.1%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Raise 2.3x 50.9%', color: 'var(--color-raise)' }, { label: 'Fold 49.1%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',      sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL 1bb',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1788,14 +1573,10 @@
     },
     bn_vs_open: {
       id: 'bn_vs_open', stack: '40', group: 'BN',
-      title: 'Hand Range 224: BN vs UTG (40bb)', pos: 'BN (Button)', spot: 'Defence vs UTG Open',
+      title: 'Hand Range 224: BN vs UTG (40bb)', pos: 'BN', spot: 'vs UTG Open',
       banner: 'UTG Opens 2x → Action on Hero (BN)', isConditional: false, raw: RANGE_224_RAW,
       borderline: ['AKs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','AKo','KQs','KJs','KTs','K9s','K8s','K7s','K6s','K5s','K4s','K3s','AQo','KQo','QQ','Q9s','Q8s','AJo','KJo','QJo','JJ','J9s','J8s','ATo','TT','T8s','T7s','99','98s','97s','88','87s','86s','77','76s','66','65s','55','54s','53s','44','33','22'],
-      legend: [
-        { label: '3-bet 5.2%', color: 'var(--color-raise)' },
-        { label: 'Call 15.9%', color: 'var(--color-call)' },
-        { label: 'Fold 78.9%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 5.2%', color: 'var(--color-raise)' }, { label: 'Call 15.9%', color: 'var(--color-call)' }, { label: 'Fold 78.9%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1804,14 +1585,10 @@
     },
     bn_vs_3bet: {
       id: 'bn_vs_3bet', stack: '40', group: 'BN',
-      title: 'Hand Range 297: BN 40bb (2.3x vs BB 3.5x 3-bet)', pos: 'BN (Button)', spot: '2.3x Open vs BB 3-Bet',
+      title: 'Hand Range 297: BN 40bb (2.3x vs BB 3.5x 3-bet)', pos: 'BN', spot: '2.3x Open vs BB 3-Bet',
       banner: 'Hero (BN) Opens 2.3x → BB 3-Bets 3.5x → Action on Hero', isConditional: true, raw: RANGE_297_RAW,
       borderline: Object.keys(RANGE_297_RAW),
-      legend: [
-        { label: 'All-in 8.8%', color: 'var(--color-allin)' },
-        { label: 'Call 45.4%', color: 'var(--color-call)' },
-        { label: 'Fold 45.7%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 8.8%', color: 'var(--color-allin)' }, { label: 'Call 45.4%', color: 'var(--color-call)' }, { label: 'Fold 45.7%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',   sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',   sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1820,29 +1597,23 @@
     },
     bn_vs_4bet: {
       id: 'bn_vs_4bet', stack: '40', group: 'BN',
-      title: 'Hand Range 225: BN vs UTG 4-bet (40bb)', pos: 'BN (Button)', spot: 'vs UTG 4-Bet',
-      banner: 'UTG Opens → Hero (BN) 3-Bets → UTG 4-Bets → Action on Hero', isConditional: true, raw: RANGE_225_RAW,
+      title: 'Hand Range 225: BN vs UTG 4-bet (40bb)', pos: 'BN', spot: 'vs UTG 4-Bet',
+      banner: 'UTG Opens → Hero (BN) 3-Bets → UTG 4-Bets → Hero', isConditional: true, raw: RANGE_225_RAW,
       borderline: Object.keys(RANGE_225_RAW),
-      legend: [
-        { label: 'Call 49.6%', color: 'var(--color-call)' },
-        { label: 'Fold 50.4%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 49.6%', color: 'var(--color-call)' }, { label: 'Fold 50.4%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
       ]
     },
 
+    // --- SB (40bb) ---
     sb_pfi: {
       id: 'sb_pfi', stack: '40', group: 'SB',
-      title: 'Hand Range 103: SB vs BB (40bb) PFI', pos: 'SB (Small Blind)', spot: 'SB PFI (vs BB)',
-      banner: 'Unopened Pot → Action on Hero (SB vs BB 40bb)', isConditional: false, raw: RANGE_103_RAW,
+      title: 'Hand Range 103: SB vs BB (40bb) PFI', pos: 'SB', spot: 'SB PFI (vs BB)',
+      banner: 'Unopened Pot → Action on Hero (SB vs BB)', isConditional: false, raw: RANGE_103_RAW,
       borderline: ['AKs','ATs','A5s','A2s','AKo','K9s','K5s','K2s','Q9s','Q8s','Q5s','J8s','J7s','J5s','T8s','T7s','T5s','98s','95s','93s','92s','87s','85s','84s','83s','76s','74s','73s','72s','65s','63s','62s','54s','52s','43s','42s','32s','95o','85o','75o','T4o','94o','54o','J3o','T3o','J2o','33','22'],
-      legend: [
-        { label: 'Raise 3.5x 26.4%', color: 'var(--color-raise)' },
-        { label: 'Limp 54.4%', color: 'var(--color-call)' },
-        { label: 'Fold 19.2%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Raise 3.5x 26.4%', color: 'var(--color-raise)' }, { label: 'Limp 54.4%', color: 'var(--color-call)' }, { label: 'Fold 19.2%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',       sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'LIMP (1bb)', sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1851,15 +1622,10 @@
     },
     sb_limp_vs_iso: {
       id: 'sb_limp_vs_iso', stack: '40', group: 'SB',
-      title: 'Hand Range 104: SB vs BB 40bb (Limp vs 3.5x)', pos: 'SB (Small Blind)', spot: 'Limp vs BB 3.5x Iso',
+      title: 'Hand Range 104: SB vs BB 40bb (Limp vs 3.5x)', pos: 'SB', spot: 'Limp vs 3.5x Iso',
       banner: 'Hero (SB) Limps → BB Raises to 3.5x → Action on Hero', isConditional: true, raw: RANGE_104_RAW,
       borderline: Object.keys(RANGE_104_RAW),
-      legend: [
-        { label: 'All-in 5.9%', color: 'var(--color-allin)' },
-        { label: 'Raise 2.75x 6.4%', color: 'var(--color-raise)' },
-        { label: 'Call 42%', color: 'var(--color-call)' },
-        { label: 'Fold 45.6%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 5.9%', color: 'var(--color-allin)' }, { label: 'Raise 2.75x 6.4%', color: 'var(--color-raise)' }, { label: 'Call 42%', color: 'var(--color-call)' }, { label: 'Fold 45.6%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',        sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',        sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1869,14 +1635,10 @@
     },
     sb_open_vs_3bet: {
       id: 'sb_open_vs_3bet', stack: '40', group: 'SB',
-      title: 'Hand Range 105: SB vs BB 40bb (3.5x Open vs 2.75x 3-bet)', pos: 'SB (Small Blind)', spot: '3.5x Open vs BB 3-Bet',
+      title: 'Hand Range 105: SB vs BB 40bb (3.5x Open vs 2.75x 3-bet)', pos: 'SB', spot: '3.5x Open vs BB 3-Bet',
       banner: 'Hero (SB) Opens 3.5x → BB 3-Bets 2.75x → Action on Hero', isConditional: true, raw: RANGE_105_RAW,
       borderline: Object.keys(RANGE_105_RAW),
-      legend: [
-        { label: 'All-in 13.1%', color: 'var(--color-allin)' },
-        { label: 'Call 40.4%', color: 'var(--color-call)' },
-        { label: 'Fold 46.5%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 13.1%', color: 'var(--color-allin)' }, { label: 'Call 40.4%', color: 'var(--color-call)' }, { label: 'Fold 46.5%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',   sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',   sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1885,14 +1647,10 @@
     },
     sb_vs_open: {
       id: 'sb_vs_open', stack: '40', group: 'SB',
-      title: 'Hand Range 201: SB vs UTG (40bb)', pos: 'SB (Small Blind)', spot: 'Defence vs UTG Open',
-      banner: 'UTG Opens 2x → Action on Hero (SB 40bb)', isConditional: false, raw: RANGE_201_RAW,
+      title: 'Hand Range 201: SB vs UTG (40bb)', pos: 'SB', spot: 'vs UTG Open',
+      banner: 'UTG Opens 2x → Action on Hero (SB)', isConditional: false, raw: RANGE_201_RAW,
       borderline: ['AQs','AJs','ATs','A9s','A8s','A7s','A6s','A5s','A4s','A3s','A2s','AQo','AJo','ATo','KQs','KJs','KTs','K9s','K8s','K7s','K6s','K5s','KQo','QQ','QJs','QTs','Q9s','JJ','JTs','J9s','TT','T9s','T8s','99','98s','88','87s','86s','77','76s','66','65s','55','54s','44','33','22'],
-      legend: [
-        { label: '3-bet 6.6%', color: 'var(--color-raise)' },
-        { label: 'Call 12.7%', color: 'var(--color-call)' },
-        { label: 'Fold 80.7%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 6.6%', color: 'var(--color-raise)' }, { label: 'Call 12.7%', color: 'var(--color-call)' }, { label: 'Fold 80.7%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1901,29 +1659,23 @@
     },
     sb_vs_4bet: {
       id: 'sb_vs_4bet', stack: '40', group: 'SB',
-      title: 'Hand Range 202: SB vs UTG 4-bet (40bb)', pos: 'SB (Small Blind)', spot: 'vs UTG 4-Bet',
-      banner: 'UTG Opens → Hero (SB) 3-Bets → UTG 4-Bets → Action on Hero', isConditional: true, raw: RANGE_202_RAW,
+      title: 'Hand Range 202: SB vs UTG 4-bet (40bb)', pos: 'SB', spot: 'vs UTG 4-Bet',
+      banner: 'UTG Opens → Hero (SB) 3-Bets → UTG 4-Bets → Hero', isConditional: true, raw: RANGE_202_RAW,
       borderline: Object.keys(RANGE_202_RAW),
-      legend: [
-        { label: 'Call 49.2%', color: 'var(--color-call)' },
-        { label: 'Fold 50.8%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 49.2%', color: 'var(--color-call)' }, { label: 'Fold 50.8%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
       ]
     },
 
+    // --- BB (40bb) ---
     bb_vs_sb_open: {
       id: 'bb_vs_sb_open', stack: '40', group: 'BB',
-      title: 'Hand Range 143: BB vs SB 3.5x Raise (40bb)', pos: 'BB (Big Blind)', spot: 'vs SB 3.5x Open',
-      banner: 'SB Raises 3.5x → Action on Hero (BB 40bb)', isConditional: false, raw: RANGE_143_RAW,
+      title: 'Hand Range 143: BB vs SB 3.5x Raise (40bb)', pos: 'BB', spot: 'vs SB 3.5x Open',
+      banner: 'SB Raises 3.5x → Action on Hero (BB)', isConditional: false, raw: RANGE_143_RAW,
       borderline: ['AJs','AJo','J2s','ATo','TT','T4s','T3s','T2s','J9o','T9o','99','94s','93s','92s','Q8o','J8o','T8o','98o','88','83s','82s','Q7o','J7o','T7o','97o','77','72s','A6o','K6o','Q6o','76o','66','A5o','K5o','Q5o','65o','A4o','K4o','54o','A3o','K3o','A2o','K2o'],
-      legend: [
-        { label: '3-bet 12.3%', color: 'var(--color-raise)' },
-        { label: 'Call 52%', color: 'var(--color-call)' },
-        { label: 'Fold 35.7%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 12.3%', color: 'var(--color-raise)' }, { label: 'Call 52%', color: 'var(--color-call)' }, { label: 'Fold 35.7%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1932,13 +1684,10 @@
     },
     bb_vs_sb_4bet: {
       id: 'bb_vs_sb_4bet', stack: '40', group: 'BB',
-      title: 'Hand Range 144: BB vs SB 4-Bet (40bb)', pos: 'BB (Big Blind)', spot: 'vs SB 4-Bet',
-      banner: 'SB Opens 3.5x → Hero (BB) 3-Bets → SB 4-Bets → Action on Hero', isConditional: true, raw: RANGE_144_RAW,
+      title: 'Hand Range 144: BB vs SB 4-Bet (40bb)', pos: 'BB', spot: 'vs SB 4-Bet',
+      banner: 'SB Opens 3.5x → Hero (BB) 3-Bets → SB 4-Bets → Hero', isConditional: true, raw: RANGE_144_RAW,
       borderline: Object.keys(RANGE_144_RAW),
-      legend: [
-        { label: 'Call 46%', color: 'var(--color-call)' },
-        { label: 'Fold 54%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 46%', color: 'var(--color-call)' }, { label: 'Fold 54%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
@@ -1946,13 +1695,10 @@
     },
     bb_vs_sb_limp: {
       id: 'bb_vs_sb_limp', stack: '40', group: 'BB',
-      title: 'Hand Range 151: BB vs SB Limp (40bb)', pos: 'BB (Big Blind)', spot: 'vs SB Limp',
-      banner: 'SB Limps (1bb) → Action on Hero (BB 40bb)', isConditional: false, raw: RANGE_151_RAW,
+      title: 'Hand Range 151: BB vs SB Limp (40bb)', pos: 'BB', spot: 'vs SB Limp',
+      banner: 'SB Limps (1bb) → Action on Hero (BB)', isConditional: false, raw: RANGE_151_RAW,
       borderline: ['A8s','A6s','A4s','A2s','K9s','K8s','K7s','K5s','K2s','KQo','QTs','Q9s','Q8s','Q5s','Q2s','KJo','QJo','J9s','J8s','J7s','J6s','J3s','ATo','KTo','QTo','JTo','T9s','T8s','T6s','T5s','T2s','A9o','K9o','T9o','98s','97s','A8o','88','87s','86s','A7o','77','76s','75s','K6o','66','65s','64s','55','54s','A4o','44','43s','33','32o','22'],
-      legend: [
-        { label: 'Raise 3.5x 44%', color: 'var(--color-raise)' },
-        { label: 'Check 56%', color: 'var(--color-call)' }
-      ],
+      legend: [{ label: 'Raise 3.5x 44%', color: 'var(--color-raise)' }, { label: 'Check 56%', color: 'var(--color-call)' }],
       actions: [
         { code: 'call',  label: 'CHECK',      sub: 'Key [1 / C]', cls: 'btn-call' },
         { code: 'raise', label: 'RAISE 3.5x', sub: 'Key [2 / R]', cls: 'btn-raise' }
@@ -1960,14 +1706,10 @@
     },
     bb_vs_sb_limp_raise: {
       id: 'bb_vs_sb_limp_raise', stack: '40', group: 'BB',
-      title: 'Hand Range 152: BB vs SB Limp-Raise (40bb)', pos: 'BB (Big Blind)', spot: 'vs SB Limp-Raise',
-      banner: 'SB Limps → Hero (BB) Raises 3.5x → SB 3-Bets → Action on Hero', isConditional: true, raw: RANGE_152_RAW,
+      title: 'Hand Range 152: BB vs SB Limp-Raise (40bb)', pos: 'BB', spot: 'vs SB Limp-Raise',
+      banner: 'SB Limps → Hero Raises 3.5x → SB 3-Bets → Hero', isConditional: true, raw: RANGE_152_RAW,
       borderline: Object.keys(RANGE_152_RAW),
-      legend: [
-        { label: 'All-in 11.1%', color: 'var(--color-allin)' },
-        { label: 'Call 39.3%', color: 'var(--color-call)' },
-        { label: 'Fold 49.6%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'All-in 11.1%', color: 'var(--color-allin)' }, { label: 'Call 39.3%', color: 'var(--color-call)' }, { label: 'Fold 49.6%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',   sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',   sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1976,14 +1718,10 @@
     },
     bb_vs_utg_open: {
       id: 'bb_vs_utg_open', stack: '40', group: 'BB',
-      title: 'Hand Range 173: BB vs UTG (40bb)', pos: 'BB (Big Blind)', spot: 'Defence vs UTG Open',
-      banner: 'UTG Opens 2x → Action on Hero (BB 40bb)', isConditional: false, raw: RANGE_173_RAW,
+      title: 'Hand Range 173: BB vs UTG (40bb)', pos: 'BB', spot: 'vs UTG Open',
+      banner: 'UTG Opens 2x → Action on Hero (BB)', isConditional: false, raw: RANGE_173_RAW,
       borderline: ['A8s','A7s','A5s','A4s','A2s','KJs','KTs','K9s','K6s','AQo','KQo','QTs','AJo','KJo','QJo','JJ','JTs','J9s','ATo','TT','T9s','A9o','98s','A8o','K8o','T8o','98o','87s','A7o','87o','A6o','K6o','86o','76o','65s','A5o','75o','65o','A4o','64o','54o','53o','43o','33','22'],
-      legend: [
-        { label: '3-bet 5.8%', color: 'var(--color-raise)' },
-        { label: 'Call 49.1%', color: 'var(--color-call)' },
-        { label: 'Fold 45%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: '3-bet 5.8%', color: 'var(--color-raise)' }, { label: 'Call 49.1%', color: 'var(--color-call)' }, { label: 'Fold 45%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold',  label: 'FOLD',  sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call',  label: 'CALL',  sub: 'Key [2 / C]', cls: 'btn-call' },
@@ -1992,13 +1730,10 @@
     },
     bb_vs_utg_4bet: {
       id: 'bb_vs_utg_4bet', stack: '40', group: 'BB',
-      title: 'Hand Range 174: BB vs UTG 4-bet (40bb)', pos: 'BB (Big Blind)', spot: 'vs UTG 4-Bet',
-      banner: 'UTG Opens → Hero (BB) 3-Bets → UTG 4-Bets → Action on Hero', isConditional: true, raw: RANGE_174_RAW,
+      title: 'Hand Range 174: BB vs UTG 4-bet (40bb)', pos: 'BB', spot: 'vs UTG 4-Bet',
+      banner: 'UTG Opens → Hero (BB) 3-Bets → UTG 4-Bets → Hero', isConditional: true, raw: RANGE_174_RAW,
       borderline: Object.keys(RANGE_174_RAW),
-      legend: [
-        { label: 'Call 50.1%', color: 'var(--color-call)' },
-        { label: 'Fold 49.9%', color: 'var(--color-fold)' }
-      ],
+      legend: [{ label: 'Call 50.1%', color: 'var(--color-call)' }, { label: 'Fold 49.9%', color: 'var(--color-fold)' }],
       actions: [
         { code: 'fold', label: 'FOLD', sub: 'Key [1 / F]', cls: 'btn-fold' },
         { code: 'call', label: 'CALL', sub: 'Key [2 / C]', cls: 'btn-call' }
@@ -2011,54 +1746,59 @@
   // ============================================================================
   const NAV_40BB = {
     positions: [
-      { key: 'UTG', label: 'UTG / UTG+1' },
-      { key: 'HJ',  label: 'LJ / HJ' },
+      { key: 'UTG', label: 'UTG' },
+      { key: 'HJ',  label: 'LJ/HJ' },
       { key: 'BN',  label: 'BN' },
       { key: 'SB',  label: 'SB' },
       { key: 'BB',  label: 'BB' },
-      { key: 'MIX', label: '🎲 Mix 40bb' }
+      { key: 'MIX', label: '🎲 MIX' }
     ],
     spots: {
       UTG: [
-        { id: 'utg_open',     label: '1. UTG Open (PFI)' },
-        { id: 'utg1_vs_open', label: '2. UTG+1 vs UTG Open' },
-        { id: 'utg_vs_3bet',  label: '3. UTG vs 3-Bet' },
-        { id: 'utg1_vs_4bet', label: '4. UTG+1 vs 4-Bet' },
-        { id: 'mix_40_utg',   label: '🎲 Mix UTG 40bb' }
+        { id: 'utg_open',     label: '1. UTG Open' },
+        { id: 'utg1_vs_open', label: '2. UTG+1 vs Open' },
+        { id: 'utg_vs_3bet',  label: '3. UTG vs 3B' },
+        { id: 'utg1_vs_4bet', label: '4. UTG+1 vs 4B' },
+        { id: 'mix_40_utg',   label: '🎲 Mix UTG' }
       ],
       HJ: [
-        { id: 'hj_open',      label: '5. LJ/HJ Open (PFI)' },
-        { id: 'hj_vs_open',   label: '6. LJ/HJ vs UTG Open' },
-        { id: 'hj_vs_3bet',   label: '7. LJ/HJ vs 3-Bet' },
-        { id: 'hj_vs_4bet',   label: '8. LJ/HJ vs 4-Bet' },
-        { id: 'mix_40_hj',    label: '🎲 Mix LJ/HJ 40bb' }
+        { id: 'hj_open',      label: '5. LJ/HJ Open' },
+        { id: 'hj_vs_open',   label: '6. LJ/HJ vs Open' },
+        { id: 'hj_vs_3bet',   label: '7. LJ/HJ vs 3B' },
+        { id: 'hj_vs_4bet',   label: '8. LJ/HJ vs 4B' },
+        { id: 'mix_40_hj',    label: '🎲 Mix LJ/HJ' }
       ],
       BN: [
-        { id: 'bn_open',      label: '9. BN Open (PFI)' },
-        { id: 'bn_vs_open',   label: '10. BN vs UTG Open' },
-        { id: 'bn_vs_3bet',   label: '11. BN vs 3-Bet' },
-        { id: 'bn_vs_4bet',   label: '12. BN vs 4-Bet' },
-        { id: 'mix_40_bn',    label: '🎲 Mix BN 40bb' }
+        { id: 'bn_open',      label: '9. BN Open' },
+        { id: 'bn_vs_open',   label: '10. BN vs Open' },
+        { id: 'bn_vs_3bet',   label: '11. BN vs 3B' },
+        { id: 'bn_vs_4bet',   label: '12. BN vs 4B' },
+        { id: 'mix_40_bn',    label: '🎲 Mix BN' }
       ],
       SB: [
-        { id: 'sb_pfi',          label: '13. SB PFI (vs BB)' },
-        { id: 'sb_limp_vs_iso',  label: '14. SB Limp vs 3.5x' },
-        { id: 'sb_open_vs_3bet', label: '15. SB 3.5x vs 3-Bet' },
-        { id: 'sb_vs_open',      label: '16. SB vs UTG Open' },
-        { id: 'sb_vs_4bet',      label: '17. SB vs UTG 4-Bet' },
-        { id: 'mix_40_sb',       label: '🎲 Mix SB 40bb' }
+        { id: 'sb_pfi',          label: '13. SB PFI' },
+        { id: 'sb_limp_vs_iso',  label: '14. Limp vs 3.5x' },
+        { id: 'sb_open_vs_3bet', label: '15. 3.5x vs 3B' },
+        { id: 'sb_vs_open',      label: '16. SB vs UTG' },
+        { id: 'sb_vs_4bet',      label: '17. SB vs 4B' },
+        { id: 'mix_40_sb',       label: '🎲 Mix SB' }
       ],
       BB: [
         { id: 'bb_vs_sb_open',       label: '18. BB vs SB 3.5x' },
-        { id: 'bb_vs_sb_4bet',       label: '19. BB vs SB 4-Bet' },
+        { id: 'bb_vs_sb_4bet',       label: '19. BB vs SB 4B' },
         { id: 'bb_vs_sb_limp',       label: '20. BB vs SB Limp' },
         { id: 'bb_vs_sb_limp_raise', label: '21. BB vs Limp-Raise' },
-        { id: 'bb_vs_utg_open',      label: '22. BB vs UTG Open' },
-        { id: 'bb_vs_utg_4bet',      label: '23. BB vs UTG 4-Bet' },
-        { id: 'mix_40_bb',           label: '🎲 Mix BB 40bb' }
+        { id: 'bb_vs_utg_open',      label: '22. BB vs UTG' },
+        { id: 'bb_vs_utg_4bet',      label: '23. BB vs UTG 4B' },
+        { id: 'mix_40_bb',           label: '🎲 Mix BB' }
       ],
       MIX: [
-        { id: 'mix_40_all', label: '🔥 Random All 23 (40bb Spots)' }
+        { id: 'mix_40_all', label: '🔥 All 23 Spots' },
+        { id: 'mix_40_utg', label: '🎲 Mix UTG' },
+        { id: 'mix_40_hj',  label: '🎲 Mix LJ/HJ' },
+        { id: 'mix_40_bn',  label: '🎲 Mix BN' },
+        { id: 'mix_40_sb',  label: '🎲 Mix SB' },
+        { id: 'mix_40_bb',  label: '🎲 Mix BB' }
       ]
     }
   };
@@ -2071,12 +1811,13 @@
   let answered = false;
   let stats = { correct: 0, total: 0, streak: 0 };
 
-  let isHoldingBackquote = false;
+  // State for Hold-to-Peek (` or Touch Hold) vs Click-to-Toggle
+  let isHoldingPeek = false;
   let maskWasCoveredBeforeHold = true;
 
   function initNavigation() {
     const totalCount = Object.keys(SCENARIOS).length;
-    document.getElementById('totalChartsTag').textContent = `${totalCount} Charts (40bb)`;
+    document.getElementById('totalChartsTag').textContent = `${totalCount} Charts`;
 
     const posContainer = document.getElementById('posButtonsContainer');
     posContainer.innerHTML = `<span class="nav-label">Pos:</span>` + NAV_40BB.positions.map(p => `
@@ -2087,14 +1828,10 @@
   }
 
   function selectPos(posKey) {
-    if (!NAV_40BB.spots[posKey]) return;
     currentPosKey = posKey;
     document.querySelectorAll('.pos-btn').forEach(b => b.classList.remove('active'));
     const posBtn = document.getElementById(`posbtn-${posKey}`);
-    if (posBtn) {
-      posBtn.classList.add('active');
-      posBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
+    if (posBtn) posBtn.classList.add('active');
 
     const spots = NAV_40BB.spots[posKey];
     const spotContainer = document.getElementById('spotButtonsContainer');
@@ -2109,10 +1846,7 @@
     selectedSpotId = spotId;
     document.querySelectorAll('.spot-btn').forEach(b => b.classList.remove('active'));
     const spBtn = document.getElementById(`spotbtn-${spotId}`);
-    if (spBtn) {
-      spBtn.classList.add('active');
-      spBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
+    if (spBtn) spBtn.classList.add('active');
     dealNextHand();
   }
 
@@ -2233,6 +1967,7 @@
         label.textContent = hand;
         cell.appendChild(label);
       }
+
       grid.appendChild(cell);
     });
   }
@@ -2263,21 +1998,14 @@
     `;
   }
 
-  function handleFeltTap() {
-    if (answered) {
-      dealNextHand();
-    }
-  }
-
   function dealNextHand() {
     answered = false;
-    isHoldingBackquote = false;
+    isHoldingPeek = false;
     maskWasCoveredBeforeHold = true;
     activeScenario = resolveScenarioFromSpot(selectedSpotId);
 
     buildScenarioUI(activeScenario);
     document.getElementById('matrixMask').classList.remove('hidden');
-    document.getElementById('pokerFelt').classList.remove('clickable-felt');
 
     const notation = pickHandNotation(activeScenario);
     currentHand = notation;
@@ -2325,12 +2053,6 @@
     const chosenFreq = dist[actionCode] || 0;
     const isCorrect = chosenFreq > 0;
 
-    try {
-      if (navigator.vibrate) {
-        navigator.vibrate(isCorrect ? 25 : [50, 40, 50]);
-      }
-    } catch (e) {}
-
     stats.total++;
     if (isCorrect) {
       stats.correct++;
@@ -2361,9 +2083,8 @@
       fbTitle.textContent = `INCORRECT! (${currentHand})`;
     }
 
-    fbDesc.textContent = `GTO: [ ${breakdownStr} ]`;
+    fbDesc.textContent = `${currentHand}: [ ${breakdownStr} ]`;
     document.getElementById('nextBtn').style.display = 'block';
-    document.getElementById('pokerFelt').classList.add('clickable-felt');
 
     document.getElementById('matrixMask').classList.add('hidden');
     const activeCell = document.getElementById(`cell-${currentHand}`);
@@ -2372,11 +2093,44 @@
     document.querySelectorAll('.act-btn').forEach(b => b.disabled = true);
   }
 
+  // Click button to toggle permanently until next state change
   function togglePeek() {
     const mask = document.getElementById('matrixMask');
     mask.classList.toggle('hidden');
     maskWasCoveredBeforeHold = !mask.classList.contains('hidden');
   }
+
+  function startHoldPeek() {
+    if (!isHoldingPeek) {
+      isHoldingPeek = true;
+      const mask = document.getElementById('matrixMask');
+      maskWasCoveredBeforeHold = !mask.classList.contains('hidden');
+      mask.classList.add('hidden');
+    }
+  }
+
+  function endHoldPeek() {
+    if (isHoldingPeek) {
+      isHoldingPeek = false;
+      const mask = document.getElementById('matrixMask');
+      if (maskWasCoveredBeforeHold) {
+        mask.classList.remove('hidden');
+      }
+    }
+  }
+
+  // Touch & Mouse Hold-to-Peek on the Matrix Wrapper (Mobile & Desktop friendly)
+  const matrixWrapper = document.getElementById('matrixWrapper');
+  matrixWrapper.addEventListener('touchstart', (e) => {
+    if (!answered) {
+      e.preventDefault();
+      startHoldPeek();
+    }
+  }, { passive: false });
+  matrixWrapper.addEventListener('touchend', endHoldPeek);
+  matrixWrapper.addEventListener('touchcancel', endHoldPeek);
+  matrixWrapper.addEventListener('mousedown', () => { if (!answered) startHoldPeek(); });
+  window.addEventListener('mouseup', endHoldPeek);
 
   function loadStats() {
     try {
@@ -2405,15 +2159,11 @@
     document.getElementById('streakText').textContent = stats.streak;
   }
 
+  // Hold-to-Peek on [`] (Backquote) + Action Shortcuts
   window.addEventListener('keydown', (e) => {
     if (e.code === 'Backquote' || e.key === '`') {
       e.preventDefault();
-      if (!isHoldingBackquote) {
-        isHoldingBackquote = true;
-        const mask = document.getElementById('matrixMask');
-        maskWasCoveredBeforeHold = !mask.classList.contains('hidden');
-        mask.classList.add('hidden');
-      }
+      startHoldPeek();
       return;
     }
 
@@ -2439,13 +2189,7 @@
   window.addEventListener('keyup', (e) => {
     if (e.code === 'Backquote' || e.key === '`') {
       e.preventDefault();
-      if (isHoldingBackquote) {
-        isHoldingBackquote = false;
-        const mask = document.getElementById('matrixMask');
-        if (maskWasCoveredBeforeHold) {
-          mask.classList.remove('hidden');
-        }
-      }
+      endHoldPeek();
     }
   });
 
